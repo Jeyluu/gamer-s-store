@@ -1,5 +1,6 @@
 //
-let carts = document.querySelectorAll(".add-cart")
+let carts = document.querySelectorAll(".add-cart");
+
 
 let products = [
     {
@@ -121,15 +122,100 @@ function setItems(product) {            //l'idée de la fonction ici est d'avoir
 }
 
 function totalCost(product) {
-    //console.log("The product price is ", product.price);
+        
     
-    localStorage.setItem("totalCost", product.price);
     let cartCost = localStorage.getItem("totalCost");
     console.log("My cartCost is", cartCost);
+    console.log(typeof cartCost);
+    
     
 
-    
+    if(cartCost != null) {
+
+        cartCost = parseInt(cartCost)
+        localStorage.setItem("totalCost", cartCost + product.price);
+        
+    } else {
+
+        localStorage.setItem("totalCost", product.price);
+
+    }
+}
+
+function displayCart(){
+    let cartItems = localStorage.getItem("productsInCart");
+    cartItems = JSON.parse(cartItems);
+    let productContainer = document.querySelector(".products");//si cet element existe sur la page la condition ci-dessous va s'executer.
+    let cartCost = localStorage.getItem("totalCost"); 
+
+    if(cartItems && productContainer){
+        productContainer.innerHTML = "";
+        Object.values(cartItems).map(item => {
+            productContainer.innerHTML += `
+            <div class="article-line">
+                
+                <i class="delete fas fa-times-circle"></i>
+                <div class="product">
+                <img src="./ressources/images/${item.tag}.jpg">
+                <span>${item.name}</span>
+                </div>
+
+                <div class="price">${item.price}</div>
+                
+                <div class="quantity">
+                <ion-icon class="decrease" name="caret-back-circle"></ion-icon>
+                <span>${item.inCart}</span>
+                <ion-icon  class="increase"name="caret-forward-circle"></ion-icon>
+                </div>
+                <div class="total">
+                    ${item.inCart * item.price},00
+                </div>
+            </div>
+            `
+        });
+
+            productContainer.innerHTML += `
+            <div class="basketTotalContainer">
+                <h4 class="basketTotalTitle">
+                Panier Total :
+                </h4>
+                <h4 class="basketTotal">
+                €${cartCost},00
+                </h4>
+            </div>
+            `
+
+    }
 }
 
 onLoadCartNumbers(); // J'appelle la fonction créer au dessus sinon elle ne tournera pas.
+displayCart();
 
+let supLine = document.querySelectorAll(".delete")
+
+
+for(i = 0; i < supLine.length; i++) {
+    supLine[i].addEventListener("click",supressionLigne)
+    
+    function supressionLigne(e){
+        if (e.target.classList.contains("delete")){
+            if(confirm("Etes vous sûr de vouloir supprimer cet article du panier?"))
+            e.target.parentElement.remove();
+            }
+        
+        
+    }
+}
+
+let increaseQty = document.querySelectorAll(".increase");
+let decreaseQty = document.querySelectorAll(".decrease");
+    
+for(i = 0; i <increaseQty.length; i++){
+    increaseQty[i].addEventListener("click",oneQty);
+
+    function oneQty(e){
+        if(e.target.classList.contains("increase")) {
+            //Faire l'ajout des quantités
+        }
+    }
+}
